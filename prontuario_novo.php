@@ -61,6 +61,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($editing) {
 
+        // Salvar snapshot do estado anterior no histórico
+        $stmtHist = $db->prepare("
+            INSERT INTO prontuario_historico 
+                (prontuario_id, usuario_id, data_atendimento, tipo_atendimento, subjetivo, prescricao, retorno)
+            SELECT id, usuario_id, data_atendimento, tipo_atendimento, subjetivo, prescricao, retorno
+            FROM prontuario WHERE id = ?
+        ");
+        $stmtHist->execute([$id]);
+
         $stmt = $db->prepare("
             UPDATE prontuario 
             SET data_atendimento=?, tipo_atendimento=?, subjetivo=?, prescricao=?, retorno=?, usuario_id=? 

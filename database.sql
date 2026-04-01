@@ -164,6 +164,24 @@ CREATE TABLE `prontuario` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `prontuario_historico`
+--
+
+CREATE TABLE `prontuario_historico` (
+  `id` int(11) NOT NULL,
+  `prontuario_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `editado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `data_atendimento` timestamp NULL DEFAULT NULL,
+  `tipo_atendimento` varchar(50) DEFAULT NULL,
+  `subjetivo` text DEFAULT NULL,
+  `prescricao` text DEFAULT NULL,
+  `retorno` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `usuarios`
 --
 
@@ -218,6 +236,14 @@ ALTER TABLE `pacientes`
   ADD UNIQUE KEY `cpf` (`cpf`);
 
 --
+-- Índices para tabela `prontuario_historico`
+--
+ALTER TABLE `prontuario_historico`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `prontuario_id` (`prontuario_id`),
+  ADD KEY `usuario_id` (`usuario_id`);
+
+--
 -- Índices para tabela `prontuario`
 --
 ALTER TABLE `prontuario`
@@ -261,6 +287,12 @@ ALTER TABLE `pacientes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
+-- AUTO_INCREMENT de tabela `prontuario_historico`
+--
+ALTER TABLE `prontuario_historico`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `prontuario`
 --
 ALTER TABLE `prontuario`
@@ -291,6 +323,13 @@ ALTER TABLE `consultas`
   ADD CONSTRAINT `consultas_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
 
 --
+-- Limitadores para a tabela `prontuario_historico`
+--
+ALTER TABLE `prontuario_historico`
+  ADD CONSTRAINT `prontuario_historico_ibfk_1` FOREIGN KEY (`prontuario_id`) REFERENCES `prontuario` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `prontuario_historico_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
+
+--
 -- Limitadores para a tabela `prontuario`
 --
 ALTER TABLE `prontuario`
@@ -304,3 +343,21 @@ COMMIT;
 
 -- Migração: adiciona updated_at à tabela prontuario (caso já exista o banco)
 -- ALTER TABLE `prontuario` ADD COLUMN `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() AFTER `created_at`;
+
+-- Migração: cria tabela de histórico de edições do prontuário (caso o banco já exista)
+-- CREATE TABLE IF NOT EXISTS `prontuario_historico` (
+--   `id` int(11) NOT NULL AUTO_INCREMENT,
+--   `prontuario_id` int(11) NOT NULL,
+--   `usuario_id` int(11) NOT NULL,
+--   `editado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+--   `data_atendimento` timestamp NULL DEFAULT NULL,
+--   `tipo_atendimento` varchar(50) DEFAULT NULL,
+--   `subjetivo` text DEFAULT NULL,
+--   `prescricao` text DEFAULT NULL,
+--   `retorno` text DEFAULT NULL,
+--   PRIMARY KEY (`id`),
+--   KEY `prontuario_id` (`prontuario_id`),
+--   KEY `usuario_id` (`usuario_id`),
+--   CONSTRAINT `prontuario_historico_ibfk_1` FOREIGN KEY (`prontuario_id`) REFERENCES `prontuario` (`id`) ON DELETE CASCADE,
+--   CONSTRAINT `prontuario_historico_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

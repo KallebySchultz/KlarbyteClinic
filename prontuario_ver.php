@@ -26,6 +26,17 @@ $stmtP = $db->prepare("SELECT id, nome FROM pacientes WHERE id = ?");
 $stmtP->execute([$registro['paciente_id']]);
 $paciente = $stmtP->fetch();
 
+// Histórico de edições
+$stmtHist = $db->prepare("
+    SELECT h.*, u.nome AS editor
+    FROM prontuario_historico h
+    LEFT JOIN usuarios u ON u.id = h.usuario_id
+    WHERE h.prontuario_id = ?
+    ORDER BY h.editado_em DESC
+");
+$stmtHist->execute([$id]);
+$historico = $stmtHist->fetchAll();
+
 $pageTitle  = 'Visualizar Prontuário';
 $activePage = 'prontuarios';
 
@@ -115,5 +126,53 @@ include 'includes/header.php';
     <a href="prontuario_novo.php?id=<?= $id ?>&paciente_id=<?= $registro['paciente_id'] ?>" class="btn btn-primary">✏️ Editar este Prontuário</a>
     <a href="paciente_ver.php?id=<?= $registro['paciente_id'] ?>#tab-prontuario" class="btn btn-outline">← Voltar ao Paciente</a>
 </div>
+
+<?php if (!empty($historico)): ?>
+<div class="card" style="margin-top:1.5rem;">
+    <h2 style="margin-bottom:1rem;">🕒 Histórico de Edições</h2>
+    <ul class="timeline">
+        <?php foreach ($historico as $h):
+            $tipoLetra = strtoupper(substr($h['tipo_atendimento'] ?? 'E', 0, 1));
+            $dataEdit  = date('d/m/Y', strtotime($h['editado_em'])) . ' às ' . date('H:i', strtotime($h['editado_em']));
+        ?>
+        <li class="timeline-item">
+            <div class="timeline-dot"><?= $tipoLetra ?></div>
+            <div class="timeline-body">
+                <div class="timeline-meta">
+                    <span class="timeline-date">✏️ Editado em <strong><?= $dataEdit ?></strong></span>
+                    <?php if (!empty($h['editor'])): ?>
+                    <span class="timeline-date">por <strong><?= sanitize($h['editor']) ?></strong></span>
+                    <?php endif; ?>
+                    <?php if (!empty($h['tipo_atendimento'])): ?>
+                    <span class="badge badge-blue" style="margin-left:auto;"><?= sanitize($h['tipo_atendimento']) ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (!empty($h['data_atendimento'])): ?>
+                <div style="font-size:.8rem;color:#6b7280;margin-bottom:.4rem;">
+                    Data do atendimento (antes): <?= date('d/m/Y', strtotime($h['data_atendimento'])) ?>
+                </div>
+                <?php endif; ?>
+
+                <?php if (trim($h['subjetivo'] ?? '')): ?>
+                <div class="timeline-section">Evolução Clínica</div>
+                <div class="timeline-text"><?= sanitize($h['subjetivo']) ?></div>
+                <?php endif; ?>
+
+                <?php if (trim($h['prescricao'] ?? '')): ?>
+                <div class="timeline-section">Prescrição</div>
+                <div class="timeline-text"><?= sanitize($h['prescricao']) ?></div>
+                <?php endif; ?>
+
+                <?php if (trim($h['retorno'] ?? '')): ?>
+                <div class="timeline-section">Exames / Retorno</div>
+                <div class="timeline-text"><?= sanitize($h['retorno']) ?></div>
+                <?php endif; ?>
+            </div>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>
