@@ -9,7 +9,7 @@
 <body>
 
 <aside class="sidebar">
-    <<div class="sidebar-logo">
+    <div class="sidebar-logo">
     <img src="<?= $root ?? '' ?>assets/img/logo.png" alt="EnterClinic" class="logo-img">
 </div>
 

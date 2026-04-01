@@ -8,9 +8,10 @@ $id  = (int)($_GET['id'] ?? 0);
 $editing = $id > 0;
 
 
-$paciente = [];
-$anamnese = [];
-$campos   = $db->query("SELECT * FROM campos_anamnese WHERE ativo = 1 ORDER BY ordem ASC")->fetchAll();
+$paciente  = [];
+$anamnese  = [];
+$campos    = $db->query("SELECT * FROM campos_anamnese WHERE ativo = 1 ORDER BY ordem ASC")->fetchAll();
+$usuarioId = $_SESSION['usuario_id'] ?? 1;
 
 if ($editing) {
     $stmt = $db->prepare("SELECT * FROM pacientes WHERE id = ?");

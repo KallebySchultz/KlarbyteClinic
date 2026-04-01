@@ -40,7 +40,7 @@ include 'includes/header.php';
 
 <div class="page-bar">
     <h2>Prontuários</h2>
-    <a href="prontuario_novo.php" class="btn btn-primary">+ Novo Registro</a>
+    <a href="pacientes.php" class="btn btn-primary">+ Novo Registro</a>
 </div>
 
 <div class="card">
