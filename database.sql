@@ -46,9 +46,7 @@ CREATE TABLE `anamnese` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `atividade_fisica` text DEFAULT NULL,
-  `hipotese_diagnostica` text DEFAULT NULL,
-  `idade` text DEFAULT NULL,
-  `filhos` text DEFAULT NULL
+  `hipotese_diagnostica` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -84,9 +82,7 @@ INSERT INTO `campos_anamnese` (`id`, `nome`, `label`, `tipo`, `opcoes`, `obrigat
 (9, 'medicamentos', 'Medicamentos / Suplementos', 'textarea', NULL, 0, 1, 9),
 (10, 'alergias', 'Alergias', 'text', NULL, 0, 1, 10),
 (11, 'exame_fisico', 'Exame Físico', 'textarea', NULL, 0, 1, 11),
-(12, 'hipotese_diagnostica', 'Hipótese Diagnóstica', 'textarea', NULL, 0, 1, 12),
-(13, 'idade', 'Idade', 'text', NULL, 0, 1, 13),
-(14, 'filhos', 'Filhos', 'text', NULL, 0, 1, 14);
+(12, 'hipotese_diagnostica', 'Hipótese Diagnóstica', 'textarea', NULL, 0, 1, 12);
 
 -- --------------------------------------------------------
 
@@ -248,7 +244,7 @@ ALTER TABLE `anamnese`
 -- AUTO_INCREMENT de tabela `campos_anamnese`
 --
 ALTER TABLE `campos_anamnese`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de tabela `consultas`
