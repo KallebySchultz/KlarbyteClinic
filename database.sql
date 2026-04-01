@@ -123,7 +123,7 @@ CREATE TABLE `pacientes` (
   `cep` varchar(10) DEFAULT NULL,
   `profissao` varchar(100) DEFAULT NULL,
   `estado_civil` varchar(50) DEFAULT NULL,
-  `numero_filhos` tinyint(3) UNSIGNED DEFAULT NULL,
+  `numero_filhos` tinyint UNSIGNED DEFAULT NULL,
   `sexo` varchar(20) DEFAULT NULL,
   `foto_path` varchar(255) DEFAULT NULL,
   `observacoes` text DEFAULT NULL,
