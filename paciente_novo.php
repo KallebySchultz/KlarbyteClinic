@@ -11,6 +11,7 @@ $editing = $id > 0;
 $paciente  = [];
 $anamnese  = [];
 $campos    = $db->query("SELECT * FROM campos_anamnese WHERE ativo = 1 ORDER BY ordem ASC")->fetchAll();
+$validAnamneseCols = $db->query("SHOW COLUMNS FROM anamnese")->fetchAll(PDO::FETCH_COLUMN);
 $usuarioId = $_SESSION['usuario_id'] ?? 1;
 
 if ($editing) {
@@ -72,8 +73,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // =========================
             $anamneseData = [];
 
+            // Only include campos whose nome matches an actual column in the anamnese table
             foreach ($campos as $campo) {
-                $anamneseData[$campo['nome']] = trim($_POST['anamnese_' . $campo['nome']] ?? '');
+                if (in_array($campo['nome'], $validAnamneseCols)) {
+                    $anamneseData[$campo['nome']] = trim($_POST['anamnese_' . $campo['nome']] ?? '');
+                }
             }
 
             // Verifica se já existe

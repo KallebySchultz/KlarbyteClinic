@@ -63,7 +63,7 @@ include 'includes/header.php';
 
 <form method="post">
     <div class="card">
-        <h2>📅 Dados da Consulta</h2>
+        <h2>Dados da Consulta</h2>
         <div class="form-grid form-grid-2">
             <div class="form-group col-span-2">
                 <label>Paciente *</label>
@@ -114,7 +114,7 @@ include 'includes/header.php';
     </div>
 
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">💾 Salvar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
         <a href="consultas.php" class="btn btn-outline">Cancelar</a>
     </div>
 </form>
