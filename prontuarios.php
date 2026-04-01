@@ -16,19 +16,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 
 $busca = trim($_GET['q'] ?? '');
 
+// Show one row per patient (unique prontuário per patient).
+// Search covers patient name and clinical notes.
 if ($busca) {
+    $like = "%$busca%";
     $stmt = $db->prepare(
-        "SELECT pr.*, p.nome as paciente_nome FROM prontuario pr
+        "SELECT p.id as paciente_id, p.nome as paciente_nome,
+                COUNT(pr.id) as total_registros,
+                MAX(pr.data_atendimento) as ultima_data,
+                MAX(pr.updated_at) as ultima_edicao
+         FROM prontuario pr
          JOIN pacientes p ON p.id = pr.paciente_id
-         WHERE p.nome LIKE ?
-         ORDER BY pr.data_atendimento DESC, pr.id DESC"
+         WHERE p.nome LIKE ? OR pr.subjetivo LIKE ? OR pr.prescricao LIKE ? OR pr.retorno LIKE ?
+         GROUP BY p.id, p.nome
+         ORDER BY ultima_data DESC"
     );
-    $stmt->execute(["%$busca%"]);
+    $stmt->execute([$like, $like, $like, $like]);
 } else {
     $stmt = $db->query(
-        "SELECT pr.*, p.nome as paciente_nome FROM prontuario pr
+        "SELECT p.id as paciente_id, p.nome as paciente_nome,
+                COUNT(pr.id) as total_registros,
+                MAX(pr.data_atendimento) as ultima_data,
+                MAX(pr.updated_at) as ultima_edicao
+         FROM prontuario pr
          JOIN pacientes p ON p.id = pr.paciente_id
-         ORDER BY pr.data_atendimento DESC, pr.id DESC
+         GROUP BY p.id, p.nome
+         ORDER BY ultima_data DESC
          LIMIT 100"
     );
 }
@@ -45,7 +58,7 @@ include 'includes/header.php';
 
 <div class="card">
     <form method="get" style="display:flex;gap:.75rem;margin-bottom:1rem;">
-        <input type="text" name="q" value="<?= sanitize($busca) ?>" placeholder="Buscar por nome do paciente…"
+        <input type="text" name="q" value="<?= sanitize($busca) ?>" placeholder="Buscar por nome do paciente, evolução, prescrição…"
                style="padding:.5rem .75rem;border:1.5px solid #d1d5db;border-radius:6px;font-size:.875rem;flex:1;">
         <button type="submit" class="btn btn-outline">Buscar</button>
         <?php if ($busca): ?>
@@ -54,82 +67,54 @@ include 'includes/header.php';
     </form>
 
     <?php if ($registros): ?>
+    <p style="font-size:.85rem;color:#6b7280;margin-bottom:.75rem;"><?= count($registros) ?> paciente(s) <?= $busca ? 'encontrado(s)' : 'com prontuário' ?></p>
     <table>
         <thead>
             <tr>
-                <th>DATA</th>
-                <th>ÚLTIMA EDIÇÃO</th>
                 <th>PACIENTE</th>
-                <th>TIPO</th>
-                <th>EVOLUÇÃO</th>
+                <th>REGISTROS</th>
+                <th>ÚLTIMA CONSULTA</th>
+                <th>ÚLTIMA EDIÇÃO</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($registros as $r): ?>
-            <?php
-            $rCriado  = $r['created_at']  ?? null;
-            $rEditado = $r['updated_at']  ?? null;
-            $rFoiEditado = $rEditado && $rCriado && date('Y-m-d H:i', strtotime($rEditado)) !== date('Y-m-d H:i', strtotime($rCriado));
-            ?>
             <tr>
-                <td><?= date('d/m/Y', strtotime($r['data_atendimento'])) ?></td>
+                <td>
+                    <a href="paciente_ver.php?id=<?= $r['paciente_id'] ?>&tab=prontuario" style="color:#2d7a50;font-weight:600;">
+                        <?= sanitize($r['paciente_nome']) ?>
+                    </a>
+                </td>
+
+                <td><?= (int)$r['total_registros'] ?> registro(s)</td>
+
+                <td><?= date('d/m/Y', strtotime($r['ultima_data'])) ?></td>
 
                 <td>
-                    <?php if ($rFoiEditado): ?>
-                    <span style="color:#6b7280;font-size:.82rem;" title="Criado em: <?= date('d/m/Y H:i', strtotime($rCriado)) ?>">
-                        ✏️ <?= date('d/m/Y', strtotime($rEditado)) ?>
+                    <?php if ($r['ultima_edicao']): ?>
+                    <span style="color:#6b7280;font-size:.82rem;">
+                        <?= date('d/m/Y H:i', strtotime($r['ultima_edicao'])) ?>
                     </span>
                     <?php else: ?>
                     <span style="color:#9ca3af;font-size:.82rem;">—</span>
                     <?php endif; ?>
                 </td>
 
-                <td>
-                    <a href="paciente_ver.php?id=<?= $r['paciente_id'] ?>" style="color:#2d7a50;font-weight:600;">
-                        <?= sanitize($r['paciente_nome']) ?>
-                    </a>
-                </td>
-
-                <td>
-                    <span class="badge badge-blue">
-                        <?= sanitize($r['tipo_atendimento']) ?>
-                    </span>
-                </td>
-
-                <td>
-                    <?=
-                    sanitize(mb_strimwidth(
-                        ($r['subjetivo'] ?? '') . ' ' .
-                        ($r['objetivo'] ?? '') . ' ' .
-                        ($r['avaliacao'] ?? ''),
-                        0,
-                        80,
-                        '…'
-                    ))
-                    ?>
-                </td>
-
                 <td style="white-space:nowrap;">
-                    <a href="prontuario_ver.php?id=<?= $r['id'] ?>" class="btn btn-outline btn-sm">
-                        Ver
+                    <a href="paciente_ver.php?id=<?= $r['paciente_id'] ?>&tab=prontuario" class="btn btn-outline btn-sm">
+                        Ver Prontuário
                     </a>
-                    <a href="prontuario_novo.php?id=<?= $r['id'] ?>&paciente_id=<?= $r['paciente_id'] ?>" class="btn btn-outline btn-sm">
-                        Editar
+                    <a href="prontuario_novo.php?paciente_id=<?= $r['paciente_id'] ?>" class="btn btn-outline btn-sm">
+                        + Registro
                     </a>
-
-                    <form method="post" style="display:inline;" onsubmit="return confirmDelete(this);">
-                        <input type="hidden" name="delete_id" value="<?= $r['id'] ?>">
-                        <input type="hidden" name="paciente_id" value="<?= $r['paciente_id'] ?>">
-                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                    </form>
                 </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
     <?php else: ?>
-    <p style="color:#9ca3af;font-size:.9rem;">Nenhum registro encontrado.</p>
+    <p style="color:#9ca3af;font-size:.9rem;">Nenhum prontuário encontrado.</p>
     <?php endif; ?>
 </div>
 

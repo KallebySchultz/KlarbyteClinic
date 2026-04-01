@@ -123,9 +123,9 @@ include 'includes/header.php';
 
 <?php if ($editing): ?>
 <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#166534;display:flex;gap:1rem;flex-wrap:wrap;">
-    <span>📋 Criado em: <strong><?= $criadoEm ?></strong></span>
+    <span>Criado em: <strong><?= $criadoEm ?></strong></span>
     <?php if ($foiEditado): ?>
-    <span>✏️ Última edição: <strong><?= $editadoEm ?></strong></span>
+    <span>Última edição: <strong><?= $editadoEm ?></strong></span>
     <?php endif; ?>
     <span style="margin-left:auto;color:#15803d;">Você está editando o mesmo prontuário — não precisa criar um novo.</span>
 </div>
