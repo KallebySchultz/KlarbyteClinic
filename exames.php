@@ -3,8 +3,9 @@ require 'config.php';
 
 $db = db();
 
-// Filtro por paciente
+// Filters
 $paciente_id = (int)($_GET['paciente_id'] ?? 0);
+$busca       = trim($_GET['q'] ?? '');
 
 if ($paciente_id) {
     $stmt = $db->prepare(
@@ -15,6 +16,16 @@ if ($paciente_id) {
          ORDER BY e.created_at DESC"
     );
     $stmt->execute([$paciente_id]);
+} elseif ($busca) {
+    $like = "%$busca%";
+    $stmt = $db->prepare(
+        "SELECT e.*, p.nome AS paciente_nome
+         FROM exames e
+         JOIN pacientes p ON p.id = e.paciente_id
+         WHERE p.nome LIKE ? OR e.nome LIKE ? OR e.descricao LIKE ?
+         ORDER BY e.created_at DESC"
+    );
+    $stmt->execute([$like, $like, $like]);
 } else {
     $stmt = $db->query(
         "SELECT e.*, p.nome AS paciente_nome
@@ -35,8 +46,10 @@ include 'includes/header.php';
 ?>
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-    <form method="get" action="exames.php" style="display:flex;gap:.5rem;align-items:center;">
-        <select name="paciente_id" class="form-control" style="min-width:220px;">
+    <form method="get" action="exames.php" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+        <input type="text" name="q" value="<?= sanitize($busca) ?>" placeholder="Buscar por paciente, nome ou descrição…"
+               style="padding:.5rem .75rem;border:1.5px solid #d1d5db;border-radius:6px;font-size:.875rem;min-width:260px;">
+        <select name="paciente_id" class="form-control" style="min-width:200px;">
             <option value="">— Todos os pacientes —</option>
             <?php foreach ($pacientes as $p): ?>
             <option value="<?= $p['id'] ?>" <?= $paciente_id === (int)$p['id'] ? 'selected' : '' ?>>
@@ -44,8 +57,8 @@ include 'includes/header.php';
             </option>
             <?php endforeach; ?>
         </select>
-        <button type="submit" class="btn btn-outline btn-sm">Filtrar</button>
-        <?php if ($paciente_id): ?>
+        <button type="submit" class="btn btn-outline btn-sm">Buscar</button>
+        <?php if ($paciente_id || $busca): ?>
         <a href="exames.php" class="btn btn-outline btn-sm">Limpar</a>
         <?php endif; ?>
     </form>
@@ -69,7 +82,7 @@ include 'includes/header.php';
             <?php
             $isImagem = str_starts_with($e['arquivo_tipo'], 'image/');
             $isPdf    = $e['arquivo_tipo'] === 'application/pdf';
-            $icone    = $isPdf ? '📄' : ($isImagem ? '🖼️' : '📎');
+            $icone    = $isPdf ? 'PDF' : ($isImagem ? 'IMG' : 'ARQ');
             $tamanhoFmt = $e['arquivo_tamanho'] > 0
                 ? (round($e['arquivo_tamanho'] / 1024, 1) < 1024
                     ? round($e['arquivo_tamanho'] / 1024, 1) . ' KB'

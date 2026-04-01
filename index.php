@@ -48,7 +48,7 @@ include 'includes/header.php';
     <div class="stat-card">
         <div class="stat-icon teal">📅</div>
         <div>
-            <div class="stat-value"><?= date('d/m') ?></div>
+            <div class="stat-value"><?= date('d/m/Y') ?></div>
             <div class="stat-label">Data de Hoje</div>
         </div>
     </div>

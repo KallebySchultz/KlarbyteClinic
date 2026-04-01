@@ -12,13 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     redirect('consultas.php');
 }
 
-$filtroData = $_GET['data'] ?? '';
+$filtroData   = $_GET['data']   ?? '';
 $filtroStatus = $_GET['status'] ?? '';
+$busca        = trim($_GET['q'] ?? '');
 
-$where = '1=1';
+$where  = '1=1';
 $params = [];
-if ($filtroData) { $where .= ' AND DATE(c.data_hora) = ?'; $params[] = $filtroData; }
-if ($filtroStatus) { $where .= ' AND c.status = ?'; $params[] = $filtroStatus; }
+if ($filtroData)   { $where .= ' AND DATE(c.data_hora) = ?'; $params[] = $filtroData; }
+if ($filtroStatus) { $where .= ' AND c.status = ?';          $params[] = $filtroStatus; }
+if ($busca)        { $where .= ' AND p.nome LIKE ?';         $params[] = "%$busca%"; }
 
 $stmt = $db->prepare(
     "SELECT c.*, p.nome as paciente_nome FROM consultas c
@@ -39,6 +41,10 @@ include 'includes/header.php';
 <div class="card">
     <form method="get" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;">
         <div class="form-group" style="margin:0;">
+            <input type="text" name="q" value="<?= sanitize($busca) ?>" placeholder="Buscar por nome do paciente…"
+                   style="padding:.5rem .75rem;border:1.5px solid #d1d5db;border-radius:6px;font-size:.875rem;min-width:220px;">
+        </div>
+        <div class="form-group" style="margin:0;">
             <input type="date" name="data" value="<?= sanitize($filtroData) ?>"
                    style="padding:.5rem .75rem;border:1.5px solid #d1d5db;border-radius:6px;font-size:.875rem;">
         </div>
@@ -50,13 +56,14 @@ include 'includes/header.php';
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit" class="btn btn-outline">Filtrar</button>
-        <?php if ($filtroData || $filtroStatus): ?>
+        <button type="submit" class="btn btn-outline">Buscar</button>
+        <?php if ($filtroData || $filtroStatus || $busca): ?>
         <a href="consultas.php" class="btn btn-outline">Limpar</a>
         <?php endif; ?>
     </form>
 
     <?php if ($consultas): ?>
+    <p style="font-size:.85rem;color:#6b7280;margin-bottom:.75rem;"><?= count($consultas) ?> consulta(s) encontrada(s)</p>
     <table>
         <thead>
             <tr><th>DATA / HORA</th><th>PACIENTE</th><th>TIPO</th><th>STATUS</th><th>OBSERVAÇÕES</th><th></th></tr>

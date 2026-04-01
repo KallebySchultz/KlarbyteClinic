@@ -137,7 +137,7 @@ include 'includes/header.php';
     <!-- TAB: Prontuário -->
     <div id="tab-prontuario" class="tab-pane">
         <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-bottom:.75rem;">
-            <a href="prontuario_imprimir.php?paciente_id=<?= $id ?>" target="_blank" class="btn btn-outline btn-sm">🖨️ Imprimir Prontuário</a>
+            <a href="prontuario_imprimir.php?paciente_id=<?= $id ?>" target="_blank" class="btn btn-outline btn-sm">Imprimir Prontuário</a>
             <a href="prontuario_novo.php?paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">+ Novo Registro</a>
         </div>
         <?php if ($prontuarios): ?>
@@ -168,7 +168,7 @@ include 'includes/header.php';
                         ?>
                         <?php if ($prFoiEditado): ?>
                         <span style="font-size:.75rem;color:#6b7280;" title="Última edição: <?= date('d/m/Y H:i', strtotime($prEditado)) ?>">
-                            ✏️ editado <?= date('d/m/Y', strtotime($prEditado)) ?>
+                            editado <?= date('d/m/Y', strtotime($prEditado)) ?>
                         </span>
                         <?php endif; ?>
 
@@ -209,7 +209,8 @@ include 'includes/header.php';
 
     <!-- TAB: Consultas -->
     <div id="tab-consultas" class="tab-pane">
-        <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+            <span style="font-size:.9rem;color:#6b7280;"><?= count($consultas) ?> consulta(s) cadastrada(s)</span>
             <a href="consulta_nova.php?paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">+ Nova Consulta</a>
         </div>
         <?php if ($consultas): ?>
@@ -272,7 +273,7 @@ include 'includes/header.php';
                     <?php
                     $isImagem = str_starts_with($e['arquivo_tipo'], 'image/');
                     $isPdf    = $e['arquivo_tipo'] === 'application/pdf';
-                    $icone    = $isPdf ? '📄' : ($isImagem ? '🖼️' : '📎');
+                    $icone    = $isPdf ? 'PDF' : ($isImagem ? 'IMG' : 'ARQ');
                     $tam      = $e['arquivo_tamanho'];
                     $tamanhoFmt = $tam > 0
                         ? (round($tam / 1024, 1) < 1024

@@ -392,7 +392,7 @@ body {
 
     <!-- Toolbar (screen only) -->
     <div class="toolbar">
-        <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
         <button class="btn btn-outline" onclick="window.close()" aria-label="Voltar">← Voltar</button>
     </div>
 
@@ -578,7 +578,7 @@ body {
 
                 <?php if (!empty($historicoByProntuario[$pr['id']])): ?>
                 <div class="entry-body historico-section">
-                    <div class="historico-title"><span aria-hidden="true">🕒</span> Histórico de Edições</div>
+                    <div class="historico-title">Histórico de Edições</div>
                     <?php foreach ($historicoByProntuario[$pr['id']] as $h):
                         $dataEdit = date('d/m/Y', strtotime($h['editado_em'])) . ' às ' . date('H:i', strtotime($h['editado_em']));
                     ?>
