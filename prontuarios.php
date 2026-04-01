@@ -105,9 +105,6 @@ include 'includes/header.php';
                     <a href="paciente_ver.php?id=<?= $r['paciente_id'] ?>&tab=prontuario" class="btn btn-outline btn-sm">
                         Ver Prontuário
                     </a>
-                    <a href="prontuario_novo.php?paciente_id=<?= $r['paciente_id'] ?>" class="btn btn-outline btn-sm">
-                        + Registro
-                    </a>
                 </td>
             </tr>
             <?php endforeach; ?>
