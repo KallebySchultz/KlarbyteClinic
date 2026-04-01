@@ -56,7 +56,7 @@ include 'includes/header.php';
         </div>
     </div>
     <div style="display:flex;gap:.5rem;">
-        <a href="paciente_novo.php?id=<?= $id ?>" class="btn btn-outline btn-sm">✏️ Editar</a>
+        <a href="paciente_novo.php?id=<?= $id ?>" class="btn btn-outline btn-sm">Editar</a>
         <a href="prontuario_novo.php?paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">+ Prontuário</a>
         <a href="consulta_nova.php?paciente_id=<?= $id ?>" class="btn btn-outline btn-sm">+ Consulta</a>
         <a href="pacientes.php" class="btn btn-outline btn-sm">← Voltar</a>
@@ -98,7 +98,7 @@ include 'includes/header.php';
         <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;padding-bottom:.6rem;border-bottom:1px solid #e5e7eb;">
                 <h2 style="margin-bottom:0;padding-bottom:0;border:none;">Anamnese</h2>
-                <a href="paciente_novo.php?id=<?= $id ?>#anamnese" class="btn btn-outline btn-sm">✏️ Editar</a>
+                <a href="paciente_novo.php?id=<?= $id ?>#anamnese" class="btn btn-outline btn-sm">Editar</a>
             </div>
             <?php if ($anamnese && $campos): ?>
             <div class="info-grid" style="grid-template-columns:1fr;">

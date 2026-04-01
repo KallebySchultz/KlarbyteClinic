@@ -109,7 +109,7 @@ include 'includes/header.php';
 
 <form method="post">
     <div class="card">
-        <h2>📋 Dados do Registro</h2>
+        <h2>Dados do Registro</h2>
 
         <div class="form-grid form-grid-2">
 
@@ -152,7 +152,7 @@ include 'includes/header.php';
     </div>
 
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">💾 Salvar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
         <a href="paciente_ver.php?id=<?= $pacienteId ?>" class="btn btn-outline">Cancelar</a>
     </div>
 </form>
