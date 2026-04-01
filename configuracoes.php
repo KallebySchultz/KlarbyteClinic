@@ -38,6 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_campo'])) {
         $maxOrdem = $db->query("SELECT MAX(ordem) FROM campos_anamnese")->fetchColumn() ?: 0;
         $db->prepare("INSERT INTO campos_anamnese (nome, label, tipo, ativo, ordem) VALUES (?,?,?,1,?)")
            ->execute([$nome, $label, $tipo, $maxOrdem + 1]);
+        // Adiciona a coluna na tabela anamnese caso ainda não exista
+        if (preg_match('/^[a-zA-Z0-9_]+$/', $nome)) {
+            $db->exec("ALTER TABLE anamnese ADD COLUMN IF NOT EXISTS `$nome` TEXT DEFAULT NULL");
+        }
         flash('Campo adicionado.');
     }
     redirect('configuracoes.php');
