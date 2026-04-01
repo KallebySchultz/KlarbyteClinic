@@ -123,6 +123,7 @@ CREATE TABLE `pacientes` (
   `cep` varchar(10) DEFAULT NULL,
   `profissao` varchar(100) DEFAULT NULL,
   `estado_civil` varchar(50) DEFAULT NULL,
+  `numero_filhos` tinyint UNSIGNED DEFAULT NULL,
   `sexo` varchar(20) DEFAULT NULL,
   `foto_path` varchar(255) DEFAULT NULL,
   `observacoes` text DEFAULT NULL,
@@ -135,8 +136,8 @@ CREATE TABLE `pacientes` (
 -- Extraindo dados da tabela `pacientes`
 --
 
-INSERT INTO `pacientes` (`id`, `nome`, `data_nascimento`, `cpf`, `rg`, `telefone`, `celular`, `email`, `endereco`, `cidade`, `estado`, `cep`, `profissao`, `estado_civil`, `sexo`, `foto_path`, `observacoes`, `ativo`, `created_at`, `updated_at`) VALUES
-(12, 'Kalleby da Silva Schultz', '2006-12-20', '05348848069', NULL, NULL, '51991242284', 'kallebyschultz@gmail.com', 'General Osório, 894', 'Venâncio Aires', NULL, NULL, 'Técnico em Informática', 'Solteiro(a)', 'M', NULL, 'teste', 1, '2026-04-01 18:55:30', '2026-04-01 18:55:30');
+INSERT INTO `pacientes` (`id`, `nome`, `data_nascimento`, `cpf`, `rg`, `telefone`, `celular`, `email`, `endereco`, `cidade`, `estado`, `cep`, `profissao`, `estado_civil`, `numero_filhos`, `sexo`, `foto_path`, `observacoes`, `ativo`, `created_at`, `updated_at`) VALUES
+(12, 'Kalleby da Silva Schultz', '2006-12-20', '05348848069', NULL, NULL, '51991242284', 'kallebyschultz@gmail.com', 'General Osório, 894', 'Venâncio Aires', NULL, NULL, 'Técnico em Informática', 'Solteiro(a)', NULL, 'M', NULL, 'teste', 1, '2026-04-01 18:55:30', '2026-04-01 18:55:30');
 
 -- --------------------------------------------------------
 

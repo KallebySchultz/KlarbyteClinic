@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cidade       = trim($_POST['cidade'] ?? '');
     $profissao    = trim($_POST['profissao'] ?? '');
     $estadoCivil  = trim($_POST['estado_civil'] ?? '');
+    $numeroFilhos = $_POST['numero_filhos'] !== '' ? (int)$_POST['numero_filhos'] : null;
     $observacoes  = trim($_POST['observacoes'] ?? '');
 
     if (!$nome) {
@@ -52,19 +53,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($editing) {
                 $stmt = $db->prepare(
                     "UPDATE pacientes SET nome=?, data_nascimento=?, sexo=?, cpf=?, celular=?, email=?,
-                     endereco=?, cidade=?, profissao=?, estado_civil=?, observacoes=? WHERE id=?"
+                     endereco=?, cidade=?, profissao=?, estado_civil=?, numero_filhos=?, observacoes=? WHERE id=?"
                 );
                 $stmt->execute([$nome, $dataNasc ?: null, $sexo, $cpf, $celular, $email,
-                                $endereco, $cidade, $profissao, $estadoCivil, $observacoes, $id]);
+                                $endereco, $cidade, $profissao, $estadoCivil, $numeroFilhos, $observacoes, $id]);
                 $pacienteId = $id;
             } else {
                 $stmt = $db->prepare(
                     "INSERT INTO pacientes (nome, data_nascimento, sexo, cpf, celular, email,
-                     endereco, cidade, profissao, estado_civil, observacoes)
-                     VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+                     endereco, cidade, profissao, estado_civil, numero_filhos, observacoes)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
                 );
                 $stmt->execute([$nome, $dataNasc ?: null, $sexo, $cpf, $celular, $email,
-                                $endereco, $cidade, $profissao, $estadoCivil, $observacoes]);
+                                $endereco, $cidade, $profissao, $estadoCivil, $numeroFilhos, $observacoes]);
                 $pacienteId = $db->lastInsertId();
             }
 
@@ -188,6 +189,11 @@ include 'includes/header.php';
                         </option>
                     <?php endforeach; ?>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label>Número de Filhos</label>
+                <input type="number" name="numero_filhos" min="0" value="<?= $paciente['numero_filhos'] ?? '' ?>">
             </div>
 
             <div class="form-group col-span-3">
