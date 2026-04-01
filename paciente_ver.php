@@ -161,9 +161,9 @@ include 'includes/header.php';
                     <div class="timeline-text"><?= sanitize($pr['prescricao']) ?></div>
                     <?php endif; ?>
 
-                    <?php if (trim($pr['exames'] ?? '')): ?>
-                    <div class="timeline-section">Exames</div>
-                    <div class="timeline-text"><?= sanitize($pr['exames']) ?></div>
+                    <?php if (trim($pr['retorno'] ?? '')): ?>
+                    <div class="timeline-section">Exames / Retorno</div>
+                    <div class="timeline-text"><?= sanitize($pr['retorno']) ?></div>
                     <?php endif; ?>
 
                 </div>

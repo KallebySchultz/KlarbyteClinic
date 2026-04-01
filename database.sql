@@ -45,42 +45,9 @@ CREATE TABLE `anamnese` (
   `dados_extras` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `atividade_fisica` int(11) NOT NULL,
-  `hipotese_diagnostica` int(11) NOT NULL
+  `atividade_fisica` text DEFAULT NULL,
+  `hipotese_diagnostica` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `anamnese_campos`
---
-
-CREATE TABLE `anamnese_campos` (
-  `id` int(11) NOT NULL,
-  `rotulo` varchar(255) NOT NULL,
-  `tipo` varchar(50) NOT NULL DEFAULT 'textarea',
-  `opcoes` text DEFAULT NULL,
-  `obrigatorio` tinyint(1) NOT NULL DEFAULT 0,
-  `ordem` int(11) NOT NULL DEFAULT 0,
-  `ativo` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `anamnese_campos`
---
-
-INSERT INTO `anamnese_campos` (`id`, `rotulo`, `tipo`, `opcoes`, `obrigatorio`, `ordem`, `ativo`) VALUES
-(1, 'Queixa Principal', 'textarea', NULL, 1, 1, 1),
-(2, 'História da Doença Atual', 'textarea', NULL, 0, 2, 1),
-(3, 'Antecedentes Pessoais', 'textarea', NULL, 0, 3, 1),
-(4, 'Antecedentes Familiares', 'textarea', NULL, 0, 4, 1),
-(5, 'Uso de Medicamentos', 'textarea', NULL, 0, 5, 1),
-(6, 'Alergias', 'text', NULL, 0, 6, 1),
-(7, 'Hábitos de Vida', 'textarea', NULL, 0, 7, 1),
-(8, 'Alimentação', 'textarea', NULL, 0, 8, 1),
-(9, 'Sono', 'textarea', NULL, 0, 9, 1),
-(10, 'Atividade Física', 'textarea', NULL, 0, 10, 1),
-(11, 'Estresse / Emocional', 'textarea', NULL, 0, 11, 1);
 
 -- --------------------------------------------------------
 
@@ -130,7 +97,7 @@ CREATE TABLE `consultas` (
   `data_hora` datetime NOT NULL,
   `duracao` int(11) NOT NULL DEFAULT 60,
   `tipo` varchar(50) NOT NULL DEFAULT 'consulta',
-  `status` varchar(20) NOT NULL DEFAULT 'agendado',
+  `status` varchar(20) NOT NULL DEFAULT 'Agendado',
   `observacoes` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -188,7 +155,7 @@ CREATE TABLE `prontuario` (
   `avaliacao` text DEFAULT NULL,
   `plano` text DEFAULT NULL,
   `prescricao` text DEFAULT NULL,
-  `retorno` varchar(50) DEFAULT NULL,
+  `retorno` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -226,12 +193,6 @@ ALTER TABLE `anamnese`
   ADD PRIMARY KEY (`id`),
   ADD KEY `paciente_id` (`paciente_id`),
   ADD KEY `usuario_id` (`usuario_id`);
-
---
--- Índices para tabela `anamnese_campos`
---
-ALTER TABLE `anamnese_campos`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices para tabela `campos_anamnese`
@@ -278,12 +239,6 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `anamnese`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de tabela `anamnese_campos`
---
-ALTER TABLE `anamnese_campos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de tabela `campos_anamnese`
