@@ -28,6 +28,11 @@ $consultas = $stmtC->fetchAll();
 // Campos anamnese ativos
 $campos = $db->query("SELECT * FROM campos_anamnese WHERE ativo = 1 ORDER BY ordem ASC")->fetchAll();
 
+// Exames
+$stmtE = $db->prepare("SELECT * FROM exames WHERE paciente_id = ? ORDER BY created_at DESC");
+$stmtE->execute([$id]);
+$exames = $stmtE->fetchAll();
+
 $pageTitle  = sanitize($paciente['nome']);
 $activePage = 'pacientes';
 
@@ -77,6 +82,7 @@ include 'includes/header.php';
         <button class="tab-btn" data-tab="tab-anamnese">Anamnese</button>
         <button class="tab-btn" data-tab="tab-prontuario">Prontuário (<?= count($prontuarios) ?>)</button>
         <button class="tab-btn" data-tab="tab-consultas">Consultas (<?= count($consultas) ?>)</button>
+        <button class="tab-btn" data-tab="tab-exames">Exames (<?= count($exames) ?>)</button>
     </div>
 
     <!-- TAB: Dados pessoais -->
@@ -241,6 +247,108 @@ include 'includes/header.php';
         </div>
         <?php endif; ?>
     </div>
+
+    <!-- TAB: Exames -->
+    <div id="tab-exames" class="tab-pane">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+            <span style="font-size:.9rem;color:#6b7280;"><?= count($exames) ?> exame(s) cadastrado(s)</span>
+            <button class="btn btn-primary btn-sm" onclick="document.getElementById('modal-exame').style.display='flex'">+ Novo Exame</button>
+        </div>
+
+        <?php if ($exames): ?>
+        <div class="card" style="padding:0;overflow:hidden;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>NOME DO EXAME</th>
+                        <th>DESCRIÇÃO</th>
+                        <th>ARQUIVO</th>
+                        <th>DATA</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($exames as $e): ?>
+                    <?php
+                    $isImagem = str_starts_with($e['arquivo_tipo'], 'image/');
+                    $isPdf    = $e['arquivo_tipo'] === 'application/pdf';
+                    $icone    = $isPdf ? '📄' : ($isImagem ? '🖼️' : '📎');
+                    $tam      = $e['arquivo_tamanho'];
+                    $tamanhoFmt = $tam > 0
+                        ? (round($tam / 1024, 1) < 1024
+                            ? round($tam / 1024, 1) . ' KB'
+                            : round($tam / (1024 * 1024), 1) . ' MB')
+                        : '';
+                    ?>
+                    <tr>
+                        <td style="font-weight:500;"><?= sanitize($e['nome']) ?></td>
+                        <td style="color:#6b7280;font-size:.875rem;"><?= sanitize(mb_strimwidth($e['descricao'] ?? '', 0, 60, '…')) ?></td>
+                        <td>
+                            <?= $icone ?> <span style="font-size:.82rem;color:#6b7280;"><?= sanitize($e['arquivo_nome']) ?><?= $tamanhoFmt ? " ({$tamanhoFmt})" : '' ?></span>
+                        </td>
+                        <td style="white-space:nowrap;"><?= date('d/m/Y', strtotime($e['created_at'])) ?></td>
+                        <td style="white-space:nowrap;">
+                            <a href="exame_arquivo.php?id=<?= $e['id'] ?>&acao=ver" target="_blank" class="btn btn-outline btn-sm">Ver</a>
+                            <a href="exame_arquivo.php?id=<?= $e['id'] ?>&acao=baixar" class="btn btn-outline btn-sm">Baixar</a>
+                            <form method="post" action="exame_excluir.php" style="display:inline;" onsubmit="return confirm('Excluir este exame?');">
+                                <input type="hidden" name="exame_id" value="<?= $e['id'] ?>">
+                                <input type="hidden" name="paciente_id" value="<?= $id ?>">
+                                <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php else: ?>
+        <div class="card">
+            <p style="color:#9ca3af;font-size:.9rem;">Nenhum exame cadastrado ainda. Clique em <strong>+ Novo Exame</strong> para importar.</p>
+        </div>
+        <?php endif; ?>
+    </div>
 </div>
+
+<!-- Modal: Upload de Exame -->
+<div id="modal-exame" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:.75rem;padding:2rem;width:100%;max-width:480px;box-shadow:0 8px 32px rgba(0,0,0,.18);">
+        <h2 style="margin-bottom:1.25rem;">Novo Exame</h2>
+        <form method="post" action="exame_upload.php" enctype="multipart/form-data">
+            <input type="hidden" name="paciente_id" value="<?= $id ?>">
+            <div class="form-group">
+                <label class="form-label">Nome do Exame *</label>
+                <input type="text" name="nome" class="form-control" required placeholder="Ex: Hemograma completo">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descrição (opcional)</label>
+                <input type="text" name="descricao" class="form-control" placeholder="Ex: Resultado de 10/03/2026">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Arquivo (PDF, JPG, PNG, GIF — máx. 20 MB) *</label>
+                <input type="file" name="arquivo" class="form-control" required accept=".pdf,.jpg,.jpeg,.png,.gif">
+            </div>
+            <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.25rem;">
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('modal-exame').style.display='none'">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Fecha modal ao clicar fora
+document.getElementById('modal-exame').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+});
+
+// Abre a aba correta conforme parâmetro ?tab=
+(function() {
+    var tabParam = new URLSearchParams(window.location.search).get('tab');
+    if (tabParam) {
+        var btn = document.querySelector('[data-tab="tab-' + tabParam + '"]');
+        if (btn) btn.click();
+    }
+})();
+</script>
 
 <?php include 'includes/footer.php'; ?>
