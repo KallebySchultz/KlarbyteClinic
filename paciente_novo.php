@@ -38,9 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email        = trim($_POST['email'] ?? '');
     $endereco     = trim($_POST['endereco'] ?? '');
     $cidade       = trim($_POST['cidade'] ?? '');
-    $profissao    = trim($_POST['profissao'] ?? '');
-    $estadoCivil  = trim($_POST['estado_civil'] ?? '');
-    $observacoes  = trim($_POST['observacoes'] ?? '');
+    $profissao      = trim($_POST['profissao'] ?? '');
+    $estadoCivil    = trim($_POST['estado_civil'] ?? '');
+    $temFilhos      = ($_POST['tem_filhos'] ?? '') !== '' ? (int)$_POST['tem_filhos'] : null;
+    $qtdFilhos      = ($temFilhos === 1 && ($_POST['quantidade_filhos'] ?? '') !== '') ? (int)$_POST['quantidade_filhos'] : null;
+    $idadesFilhos   = $temFilhos === 1 ? trim($_POST['idades_filhos'] ?? '') : '';
+    $observacoes    = trim($_POST['observacoes'] ?? '');
 
     if (!$nome) {
         flash('O nome do paciente é obrigatório.', 'error');
@@ -52,19 +55,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($editing) {
                 $stmt = $db->prepare(
                     "UPDATE pacientes SET nome=?, data_nascimento=?, sexo=?, cpf=?, celular=?, email=?,
-                     endereco=?, cidade=?, profissao=?, estado_civil=?, observacoes=? WHERE id=?"
+                     endereco=?, cidade=?, profissao=?, estado_civil=?, tem_filhos=?, quantidade_filhos=?, idades_filhos=?, observacoes=? WHERE id=?"
                 );
                 $stmt->execute([$nome, $dataNasc ?: null, $sexo, $cpf, $celular, $email,
-                                $endereco, $cidade, $profissao, $estadoCivil, $observacoes, $id]);
+                                $endereco, $cidade, $profissao, $estadoCivil, $temFilhos, $qtdFilhos, $idadesFilhos, $observacoes, $id]);
                 $pacienteId = $id;
             } else {
                 $stmt = $db->prepare(
                     "INSERT INTO pacientes (nome, data_nascimento, sexo, cpf, celular, email,
-                     endereco, cidade, profissao, estado_civil, observacoes)
-                     VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+                     endereco, cidade, profissao, estado_civil, tem_filhos, quantidade_filhos, idades_filhos, observacoes)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
                 );
                 $stmt->execute([$nome, $dataNasc ?: null, $sexo, $cpf, $celular, $email,
-                                $endereco, $cidade, $profissao, $estadoCivil, $observacoes]);
+                                $endereco, $cidade, $profissao, $estadoCivil, $temFilhos, $qtdFilhos, $idadesFilhos, $observacoes]);
                 $pacienteId = $db->lastInsertId();
             }
 
@@ -190,6 +193,26 @@ include 'includes/header.php';
                 </select>
             </div>
 
+            <?php $temFilhosVal = isset($paciente['tem_filhos']) && $paciente['tem_filhos'] !== null ? (string)(int)$paciente['tem_filhos'] : ''; ?>
+            <div class="form-group">
+                <label>Tem Filhos?</label>
+                <select name="tem_filhos" id="tem_filhos" onchange="toggleFilhos(this.value)">
+                    <option value="" <?= $temFilhosVal === '' ? 'selected' : '' ?>>Selecione…</option>
+                    <option value="1" <?= $temFilhosVal === '1' ? 'selected' : '' ?>>Sim</option>
+                    <option value="0" <?= $temFilhosVal === '0' ? 'selected' : '' ?>>Não</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="campo_qtd_filhos" style="<?= $temFilhosVal === '1' ? '' : 'display:none;' ?>">
+                <label>Quantidade de Filhos</label>
+                <input type="number" name="quantidade_filhos" min="0" value="<?= sanitize((string)($paciente['quantidade_filhos'] ?? '')) ?>">
+            </div>
+
+            <div class="form-group" id="campo_idades_filhos" style="<?= $temFilhosVal === '1' ? '' : 'display:none;' ?>">
+                <label>Idades dos Filhos</label>
+                <input type="text" name="idades_filhos" placeholder="Ex: 5, 10, 15" value="<?= sanitize($paciente['idades_filhos'] ?? '') ?>">
+            </div>
+
             <div class="form-group col-span-3">
                 <label>Endereço</label>
                 <input type="text" name="endereco" value="<?= sanitize($paciente['endereco'] ?? '') ?>">
@@ -250,3 +273,14 @@ include 'includes/header.php';
 </form>
 
 <?php include 'includes/footer.php'; ?>
+<script>
+function toggleFilhos(val) {
+    var show = val === '1';
+    document.getElementById('campo_qtd_filhos').style.display = show ? '' : 'none';
+    document.getElementById('campo_idades_filhos').style.display = show ? '' : 'none';
+    if (!show) {
+        document.querySelector('[name="quantidade_filhos"]').value = '';
+        document.querySelector('[name="idades_filhos"]').value = '';
+    }
+}
+</script>

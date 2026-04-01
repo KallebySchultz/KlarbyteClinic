@@ -84,6 +84,13 @@ include 'includes/header.php';
                 <div class="info-item"><label>Sexo</label><span><?= ['M'=>'Masculino','F'=>'Feminino','O'=>'Outro'][$paciente['sexo']] ?? '—' ?></span></div>
                 <div class="info-item"><label>Profissão</label><span><?= sanitize($paciente['profissao'] ?? '—') ?></span></div>
                 <div class="info-item"><label>Estado Civil</label><span><?= sanitize($paciente['estado_civil'] ?? '—') ?></span></div>
+                <div class="info-item"><label>Filhos</label><span><?= isset($paciente['tem_filhos']) ? ($paciente['tem_filhos'] ? 'Sim' : 'Não') : '—' ?></span></div>
+                <?php if ($paciente['tem_filhos']): ?>
+                <div class="info-item"><label>Qtd. de Filhos</label><span><?= $paciente['quantidade_filhos'] !== null ? (int)$paciente['quantidade_filhos'] : '—' ?></span></div>
+                <?php if ($paciente['idades_filhos']): ?>
+                <div class="info-item"><label>Idades dos Filhos</label><span><?= sanitize($paciente['idades_filhos']) ?></span></div>
+                <?php endif; ?>
+                <?php endif; ?>
                 <div class="info-item"><label>Cidade</label><span><?= sanitize($paciente['cidade'] ?? '—') ?></span></div>
                 <div class="info-item" style="grid-column:span 3"><label>Endereço</label><span><?= sanitize($paciente['endereco'] ?? '—') ?></span></div>
                 <?php if ($paciente['observacoes']): ?>
