@@ -45,6 +45,11 @@ if (!$paciente) {
 $pageTitle  = $editing ? 'Editar Prontuário' : 'Novo Prontuário';
 $activePage = 'prontuarios';
 
+// Datas de criação e última edição (para exibição no formulário de edição)
+$criadoEm    = $editing && !empty($registro['created_at'])  ? date('d/m/Y H:i', strtotime($registro['created_at']))  : null;
+$editadoEm   = $editing && !empty($registro['updated_at'])  ? date('d/m/Y H:i', strtotime($registro['updated_at']))  : null;
+$foiEditado  = $editing && $criadoEm !== $editadoEm;
+
 // SALVAR
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -103,9 +108,19 @@ include 'includes/header.php';
     <a href="paciente_ver.php?id=<?= $pacienteId ?>" class="btn btn-outline">← Voltar</a>
 </div>
 
-<p style="color:#6b7280;font-size:.9rem;margin-bottom:1rem;">
+<p style="color:#6b7280;font-size:.9rem;margin-bottom:<?= $editing ? '.5rem' : '1rem' ?>;">
     Paciente: <strong><?= sanitize($paciente['nome']) ?></strong>
 </p>
+
+<?php if ($editing): ?>
+<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#166534;display:flex;gap:1rem;flex-wrap:wrap;">
+    <span>📋 Criado em: <strong><?= $criadoEm ?></strong></span>
+    <?php if ($foiEditado): ?>
+    <span>✏️ Última edição: <strong><?= $editadoEm ?></strong></span>
+    <?php endif; ?>
+    <span style="margin-left:auto;color:#15803d;">Você está editando o mesmo prontuário — não precisa criar um novo.</span>
+</div>
+<?php endif; ?>
 
 <form method="post">
     <div class="card">

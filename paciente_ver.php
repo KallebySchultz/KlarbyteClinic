@@ -149,8 +149,21 @@ include 'includes/header.php';
                 <div class="timeline-dot"><?= mb_strtoupper(mb_substr($pr['tipo_atendimento'],0,1)) ?></div>
                 <div class="timeline-body">
                     <div class="timeline-meta">
-                        <strong><?= date('d/m/Y', strtotime($pr['data_atendimento'])) ?></strong>
+                        <a href="prontuario_ver.php?id=<?= $pr['id'] ?>" style="color:#111827;text-decoration:none;font-weight:600;">
+                            <?= date('d/m/Y', strtotime($pr['data_atendimento'])) ?>
+                        </a>
                         <span class="badge badge-blue"><?= sanitize($pr['tipo_atendimento']) ?></span>
+
+                        <?php
+                        $prCriado  = $pr['created_at']  ?? null;
+                        $prEditado = $pr['updated_at']  ?? null;
+                        $prFoiEditado = $prEditado && $prCriado && date('Y-m-d H:i', strtotime($prEditado)) !== date('Y-m-d H:i', strtotime($prCriado));
+                        ?>
+                        <?php if ($prFoiEditado): ?>
+                        <span style="font-size:.75rem;color:#6b7280;" title="Última edição: <?= date('d/m/Y H:i', strtotime($prEditado)) ?>">
+                            ✏️ editado <?= date('d/m/Y', strtotime($prEditado)) ?>
+                        </span>
+                        <?php endif; ?>
 
                         <a href="prontuario_novo.php?id=<?= $pr['id'] ?>&paciente_id=<?= $id ?>" style="margin-left:auto;font-size:.78rem;color:#2d7a50;">Editar</a>
 

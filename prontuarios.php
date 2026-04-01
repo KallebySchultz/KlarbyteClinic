@@ -58,6 +58,7 @@ include 'includes/header.php';
         <thead>
             <tr>
                 <th>DATA</th>
+                <th>ÚLTIMA EDIÇÃO</th>
                 <th>PACIENTE</th>
                 <th>TIPO</th>
                 <th>EVOLUÇÃO</th>
@@ -66,8 +67,23 @@ include 'includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($registros as $r): ?>
+            <?php
+            $rCriado  = $r['created_at']  ?? null;
+            $rEditado = $r['updated_at']  ?? null;
+            $rFoiEditado = $rEditado && $rCriado && date('Y-m-d H:i', strtotime($rEditado)) !== date('Y-m-d H:i', strtotime($rCriado));
+            ?>
             <tr>
                 <td><?= date('d/m/Y', strtotime($r['data_atendimento'])) ?></td>
+
+                <td>
+                    <?php if ($rFoiEditado): ?>
+                    <span style="color:#6b7280;font-size:.82rem;" title="Criado em: <?= date('d/m/Y H:i', strtotime($rCriado)) ?>">
+                        ✏️ <?= date('d/m/Y', strtotime($rEditado)) ?>
+                    </span>
+                    <?php else: ?>
+                    <span style="color:#9ca3af;font-size:.82rem;">—</span>
+                    <?php endif; ?>
+                </td>
 
                 <td>
                     <a href="paciente_ver.php?id=<?= $r['paciente_id'] ?>" style="color:#2d7a50;font-weight:600;">
@@ -95,6 +111,9 @@ include 'includes/header.php';
                 </td>
 
                 <td style="white-space:nowrap;">
+                    <a href="prontuario_ver.php?id=<?= $r['id'] ?>" class="btn btn-outline btn-sm">
+                        Ver
+                    </a>
                     <a href="prontuario_novo.php?id=<?= $r['id'] ?>&paciente_id=<?= $r['paciente_id'] ?>" class="btn btn-outline btn-sm">
                         Editar
                     </a>
