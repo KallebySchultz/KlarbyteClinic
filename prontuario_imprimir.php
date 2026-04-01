@@ -44,6 +44,24 @@ if ($prontuarioId) {
 }
 $prontuarios = $stmtPr->fetchAll();
 
+// Histórico de edições
+$historicoByProntuario = [];
+if ($prontuarioId) {
+    $stmtHist = $db->prepare("SELECT h.id, h.prontuario_id, h.editado_em, h.data_atendimento, h.tipo_atendimento, h.subjetivo, h.prescricao, h.retorno, u.nome AS editor FROM prontuario_historico h LEFT JOIN usuarios u ON u.id = h.usuario_id WHERE h.prontuario_id = ? ORDER BY h.editado_em DESC");
+    $stmtHist->execute([$prontuarioId]);
+    foreach ($stmtHist->fetchAll() as $h) {
+        $historicoByProntuario[$h['prontuario_id']][] = $h;
+    }
+} elseif ($prontuarios) {
+    $ids = array_column($prontuarios, 'id');
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmtHist = $db->prepare("SELECT h.id, h.prontuario_id, h.editado_em, h.data_atendimento, h.tipo_atendimento, h.subjetivo, h.prescricao, h.retorno, u.nome AS editor FROM prontuario_historico h LEFT JOIN usuarios u ON u.id = h.usuario_id WHERE h.prontuario_id IN ($placeholders) ORDER BY h.prontuario_id, h.editado_em DESC");
+    $stmtHist->execute($ids);
+    foreach ($stmtHist->fetchAll() as $h) {
+        $historicoByProntuario[$h['prontuario_id']][] = $h;
+    }
+}
+
 // Patient age
 $idade = null;
 if ($paciente['data_nascimento']) {
@@ -308,7 +326,52 @@ body {
     text-align: center;
 }
 
-/* ── Print styles ─────────────────────────── */
+/* ── Histórico de edições ─────────────────── */
+.historico-section {
+    margin-top: .5rem;
+    border-top: 1px dashed #d1fae5;
+    padding-top: .5rem;
+}
+
+.historico-title {
+    font-size: .68rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .5rem;
+}
+
+.historico-item {
+    margin-bottom: .6rem;
+    padding: .45rem .65rem;
+    background: #fafafa;
+    border-left: 2px solid #d1d5db;
+    border-radius: 0 4px 4px 0;
+    font-size: .8rem;
+}
+
+.historico-item-meta {
+    color: #6b7280;
+    margin-bottom: .25rem;
+}
+
+.historico-item-meta strong { color: #374151; }
+
+.historico-item-field-label {
+    font-size: .7rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: .3rem;
+    margin-bottom: .1rem;
+}
+
+.historico-item-field-value {
+    color: #4b5563;
+    white-space: pre-wrap;
+}
 @media print {
     body { background: #fff; }
     .toolbar { display: none; }
@@ -330,7 +393,7 @@ body {
     <!-- Toolbar (screen only) -->
     <div class="toolbar">
         <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir</button>
-        <a href="javascript:history.back()" class="btn btn-outline">← Voltar</a>
+        <button class="btn btn-outline" onclick="window.close()" aria-label="Voltar">← Voltar</button>
     </div>
 
     <!-- Document header -->
@@ -433,8 +496,8 @@ body {
         </div>
     </div>
 
-    <!-- Anamnese (only when printing full record) -->
-    <?php if (!$prontuarioId && $anamnese && $campos):
+    <!-- Anamnese -->
+    <?php if ($anamnese && $campos):
         $camposPreenchidos = array_filter($campos, fn($campo) => trim($anamnese[$campo['nome']] ?? '') !== '');
         if ($camposPreenchidos):
     ?>
@@ -469,7 +532,7 @@ body {
                     </div>
                     <div class="entry-meta">
                         <span class="badge"><?= sanitize($tipoLabel) ?></span>
-                        <?php if (!empty($pr['profissional'])): ?>
+                        <?php if (!empty($pr['profissional']) && $pr['profissional'] !== 'Administrador'): ?>
                         <span>Prof.: <?= sanitize($pr['profissional']) ?></span>
                         <?php endif; ?>
                     </div>
@@ -510,6 +573,36 @@ body {
                 <?php else: ?>
                 <div class="entry-body" style="color:#9ca3af;font-size:.85rem;font-style:italic;">
                     Nenhum dado registrado neste atendimento.
+                </div>
+                <?php endif; ?>
+
+                <?php if (!empty($historicoByProntuario[$pr['id']])): ?>
+                <div class="entry-body historico-section">
+                    <div class="historico-title"><span aria-hidden="true">🕒</span> Histórico de Edições</div>
+                    <?php foreach ($historicoByProntuario[$pr['id']] as $h):
+                        $dataEdit = date('d/m/Y', strtotime($h['editado_em'])) . ' às ' . date('H:i', strtotime($h['editado_em']));
+                    ?>
+                    <div class="historico-item">
+                        <div class="historico-item-meta">
+                            Editado em <strong><?= $dataEdit ?></strong>
+                            <?php if (!empty($h['editor']) && $h['editor'] !== 'Administrador'): ?>
+                            por <strong><?= sanitize($h['editor']) ?></strong>
+                            <?php endif; ?>
+                        </div>
+                        <?php if (trim($h['subjetivo'] ?? '')): ?>
+                        <div class="historico-item-field-label">Evolução Clínica (antes)</div>
+                        <div class="historico-item-field-value"><?= sanitize($h['subjetivo']) ?></div>
+                        <?php endif; ?>
+                        <?php if (trim($h['prescricao'] ?? '')): ?>
+                        <div class="historico-item-field-label">Prescrição (antes)</div>
+                        <div class="historico-item-field-value"><?= sanitize($h['prescricao']) ?></div>
+                        <?php endif; ?>
+                        <?php if (trim($h['retorno'] ?? '')): ?>
+                        <div class="historico-item-field-label">Exames / Retorno (antes)</div>
+                        <div class="historico-item-field-value"><?= sanitize($h['retorno']) ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
                 <?php endif; ?>
             </div>
