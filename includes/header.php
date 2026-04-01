@@ -24,6 +24,7 @@
         <p class="nav-section">CLÍNICO</p>
         <a href="<?= $root ?? '' ?>prontuarios.php" class="<?= ($activePage ?? '') === 'prontuarios' ? 'active' : '' ?>">Prontuários</a>
         <a href="<?= $root ?? '' ?>consultas.php" class="<?= ($activePage ?? '') === 'consultas' ? 'active' : '' ?>">Consultas</a>
+        <a href="<?= $root ?? '' ?>exames.php" class="<?= ($activePage ?? '') === 'exames' ? 'active' : '' ?>">Exames</a>
 
         <p class="nav-section">SISTEMA</p>
         <a href="<?= $root ?? '' ?>configuracoes.php" class="<?= ($activePage ?? '') === 'configuracoes' ? 'active' : '' ?>">Configurações</a>

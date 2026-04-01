@@ -341,6 +341,28 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `exames`
+--
+
+CREATE TABLE `exames` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `paciente_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL DEFAULT 1,
+  `nome` varchar(255) NOT NULL,
+  `descricao` varchar(500) DEFAULT NULL,
+  `arquivo_path` varchar(500) NOT NULL,
+  `arquivo_nome` varchar(255) NOT NULL,
+  `arquivo_tipo` varchar(100) NOT NULL,
+  `arquivo_tamanho` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `paciente_id` (`paciente_id`),
+  CONSTRAINT `exames_ibfk_1` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Migração: adiciona updated_at à tabela prontuario (caso já exista o banco)
 -- ALTER TABLE `prontuario` ADD COLUMN `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() AFTER `created_at`;
 
@@ -360,4 +382,21 @@ COMMIT;
 --   KEY `usuario_id` (`usuario_id`),
 --   CONSTRAINT `prontuario_historico_ibfk_1` FOREIGN KEY (`prontuario_id`) REFERENCES `prontuario` (`id`) ON DELETE CASCADE,
 --   CONSTRAINT `prontuario_historico_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Migração: cria tabela de exames (caso o banco já exista)
+-- CREATE TABLE IF NOT EXISTS `exames` (
+--   `id` int(11) NOT NULL AUTO_INCREMENT,
+--   `paciente_id` int(11) NOT NULL,
+--   `usuario_id` int(11) NOT NULL DEFAULT 1,
+--   `nome` varchar(255) NOT NULL,
+--   `descricao` varchar(500) DEFAULT NULL,
+--   `arquivo_path` varchar(500) NOT NULL,
+--   `arquivo_nome` varchar(255) NOT NULL,
+--   `arquivo_tipo` varchar(100) NOT NULL,
+--   `arquivo_tamanho` int(11) NOT NULL DEFAULT 0,
+--   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+--   PRIMARY KEY (`id`),
+--   KEY `paciente_id` (`paciente_id`),
+--   CONSTRAINT `exames_ibfk_1` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id`) ON DELETE CASCADE
 -- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
