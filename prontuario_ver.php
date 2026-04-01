@@ -51,6 +51,7 @@ include 'includes/header.php';
     <h2>Prontuário — <?= sanitize($paciente['nome'] ?? '') ?></h2>
     <div style="display:flex;gap:.5rem;">
         <a href="prontuario_novo.php?id=<?= $id ?>&paciente_id=<?= $registro['paciente_id'] ?>" class="btn btn-primary btn-sm">✏️ Editar</a>
+        <a href="prontuario_imprimir.php?id=<?= $id ?>" target="_blank" class="btn btn-outline btn-sm">🖨️ Imprimir</a>
         <a href="paciente_ver.php?id=<?= $registro['paciente_id'] ?>#tab-prontuario" class="btn btn-outline btn-sm">← Voltar</a>
     </div>
 </div>
@@ -124,6 +125,7 @@ include 'includes/header.php';
 
 <div class="form-actions">
     <a href="prontuario_novo.php?id=<?= $id ?>&paciente_id=<?= $registro['paciente_id'] ?>" class="btn btn-primary">✏️ Editar este Prontuário</a>
+    <a href="prontuario_imprimir.php?id=<?= $id ?>" target="_blank" class="btn btn-outline">🖨️ Imprimir</a>
     <a href="paciente_ver.php?id=<?= $registro['paciente_id'] ?>#tab-prontuario" class="btn btn-outline">← Voltar ao Paciente</a>
 </div>
 
