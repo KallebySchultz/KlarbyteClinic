@@ -32,6 +32,17 @@ if (!$pacienteId) {
     redirect('pacientes.php');
 }
 
+// Enforce uniqueness: if creating new, redirect to edit the existing prontuário
+if (!$editing) {
+    $stmtCheck = $db->prepare("SELECT id FROM prontuario WHERE paciente_id = ? LIMIT 1");
+    $stmtCheck->execute([$pacienteId]);
+    $existingId = $stmtCheck->fetchColumn();
+    if ($existingId) {
+        flash('Este paciente já possui um prontuário. Editando o existente.');
+        redirect('prontuario_novo.php?id=' . $existingId . '&paciente_id=' . $pacienteId);
+    }
+}
+
 // paciente
 $stmtP = $db->prepare("SELECT id, nome FROM pacientes WHERE id = ?");
 $stmtP->execute([$pacienteId]);

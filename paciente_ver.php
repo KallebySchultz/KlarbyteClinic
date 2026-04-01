@@ -15,10 +15,24 @@ $stmtA = $db->prepare("SELECT * FROM anamnese WHERE paciente_id = ? ORDER BY id 
 $stmtA->execute([$id]);
 $anamnese = $stmtA->fetch() ?: [];
 
-// ✅ PRONTUÁRIO CORRIGIDO
-$stmtP = $db->prepare("SELECT * FROM prontuario WHERE paciente_id = ? ORDER BY data_atendimento DESC, id DESC");
+// Prontuário único por paciente
+$stmtP = $db->prepare("SELECT * FROM prontuario WHERE paciente_id = ? ORDER BY id DESC LIMIT 1");
 $stmtP->execute([$id]);
-$prontuarios = $stmtP->fetchAll();
+$prontuario = $stmtP->fetch() ?: null;
+
+// Histórico de edições do prontuário
+$prontuarioHistorico = [];
+if ($prontuario) {
+    $stmtPH = $db->prepare("
+        SELECT h.*, u.nome AS editor
+        FROM prontuario_historico h
+        LEFT JOIN usuarios u ON u.id = h.usuario_id
+        WHERE h.prontuario_id = ?
+        ORDER BY h.editado_em DESC
+    ");
+    $stmtPH->execute([$prontuario['id']]);
+    $prontuarioHistorico = $stmtPH->fetchAll();
+}
 
 // Consultas
 $stmtC = $db->prepare("SELECT * FROM consultas WHERE paciente_id = ? ORDER BY data_hora DESC LIMIT 10");
@@ -70,7 +84,11 @@ include 'includes/header.php';
     </div>
     <div style="display:flex;gap:.5rem;">
         <a href="paciente_novo.php?id=<?= $id ?>" class="btn btn-outline btn-sm">Editar</a>
+        <?php if ($prontuario): ?>
+        <a href="prontuario_novo.php?id=<?= $prontuario['id'] ?>&paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">Editar Prontuário</a>
+        <?php else: ?>
         <a href="prontuario_novo.php?paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">+ Prontuário</a>
+        <?php endif; ?>
         <a href="consulta_nova.php?paciente_id=<?= $id ?>" class="btn btn-outline btn-sm">+ Consulta</a>
         <a href="pacientes.php" class="btn btn-outline btn-sm">← Voltar</a>
     </div>
@@ -80,7 +98,7 @@ include 'includes/header.php';
     <div class="tabs">
         <button class="tab-btn active" data-tab="tab-dados">Dados</button>
         <button class="tab-btn" data-tab="tab-anamnese">Anamnese</button>
-        <button class="tab-btn" data-tab="tab-prontuario">Prontuário (<?= count($prontuarios) ?>)</button>
+        <button class="tab-btn" data-tab="tab-prontuario">Prontuário</button>
         <button class="tab-btn" data-tab="tab-consultas">Consultas (<?= count($consultas) ?>)</button>
         <button class="tab-btn" data-tab="tab-exames">Exames (<?= count($exames) ?>)</button>
     </div>
@@ -136,73 +154,107 @@ include 'includes/header.php';
 
     <!-- TAB: Prontuário -->
     <div id="tab-prontuario" class="tab-pane">
+        <?php if ($prontuario): ?>
+
+        <?php
+        $prCriado  = !empty($prontuario['created_at'])  ? date('d/m/Y H:i', strtotime($prontuario['created_at']))  : null;
+        $prEditado = !empty($prontuario['updated_at'])   ? date('d/m/Y H:i', strtotime($prontuario['updated_at']))  : null;
+        $prFoiEditado = $prEditado && $prCriado && $prEditado !== $prCriado;
+        ?>
+
         <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-bottom:.75rem;">
-            <a href="prontuario_imprimir.php?paciente_id=<?= $id ?>" target="_blank" class="btn btn-outline btn-sm">Imprimir Prontuário</a>
-            <a href="prontuario_novo.php?paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">+ Novo Registro</a>
+            <a href="prontuario_imprimir.php?paciente_id=<?= $id ?>" target="_blank" class="btn btn-outline btn-sm">Imprimir</a>
+            <a href="prontuario_novo.php?id=<?= $prontuario['id'] ?>&paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">Editar Prontuário</a>
         </div>
-        <?php if ($prontuarios): ?>
-        <ul class="timeline">
-            <?php foreach ($prontuarios as $pr): ?>
 
-            <?php
-            $evolucao = trim(
-                ($pr['subjetivo'] ?? '') . ' ' .
-                ($pr['objetivo'] ?? '') . ' ' .
-                ($pr['avaliacao'] ?? '')
-            );
-            ?>
+        <!-- Cabeçalho de datas -->
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#166534;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
+            <?php if ($prCriado): ?><span>Criado em: <strong><?= $prCriado ?></strong></span><?php endif; ?>
+            <?php if ($prFoiEditado): ?><span>Última edição: <strong><?= $prEditado ?></strong></span><?php endif; ?>
+            <span class="badge badge-blue" style="margin-left:auto;"><?= sanitize($prontuario['tipo_atendimento']) ?></span>
+        </div>
 
-            <li class="timeline-item">
-                <div class="timeline-dot"><?= mb_strtoupper(mb_substr($pr['tipo_atendimento'],0,1)) ?></div>
-                <div class="timeline-body">
-                    <div class="timeline-meta">
-                        <a href="prontuario_ver.php?id=<?= $pr['id'] ?>" style="color:#111827;text-decoration:none;font-weight:600;">
-                            <?= date('d/m/Y', strtotime($pr['data_atendimento'])) ?>
-                        </a>
-                        <span class="badge badge-blue"><?= sanitize($pr['tipo_atendimento']) ?></span>
-
-                        <?php
-                        $prCriado  = $pr['created_at']  ?? null;
-                        $prEditado = $pr['updated_at']  ?? null;
-                        $prFoiEditado = $prEditado && $prCriado && date('Y-m-d H:i', strtotime($prEditado)) !== date('Y-m-d H:i', strtotime($prCriado));
-                        ?>
-                        <?php if ($prFoiEditado): ?>
-                        <span style="font-size:.75rem;color:#6b7280;" title="Última edição: <?= date('d/m/Y H:i', strtotime($prEditado)) ?>">
-                            editado <?= date('d/m/Y', strtotime($prEditado)) ?>
-                        </span>
-                        <?php endif; ?>
-
-                        <a href="prontuario_novo.php?id=<?= $pr['id'] ?>&paciente_id=<?= $id ?>" style="margin-left:auto;font-size:.78rem;color:#2d7a50;">Editar</a>
-
-                        <form method="post" action="prontuarios.php" style="display:inline;" onsubmit="return confirmDelete(this);">
-                            <input type="hidden" name="delete_id" value="<?= $pr['id'] ?>">
-                            <input type="hidden" name="paciente_id" value="<?= $id ?>">
-                            <button type="submit" style="background:none;border:none;cursor:pointer;font-size:.78rem;color:#ef4444;">Excluir</button>
-                        </form>
-                    </div>
-
-                    <?php if ($evolucao): ?>
-                    <div class="timeline-section">Evolução Clínica</div>
-                    <div class="timeline-text"><?= sanitize($evolucao) ?></div>
-                    <?php endif; ?>
-
-                    <?php if (trim($pr['prescricao'] ?? '')): ?>
-                    <div class="timeline-section">Prescrição</div>
-                    <div class="timeline-text"><?= sanitize($pr['prescricao']) ?></div>
-                    <?php endif; ?>
-
-                    <?php if (trim($pr['retorno'] ?? '')): ?>
-                    <div class="timeline-section">Exames / Retorno</div>
-                    <div class="timeline-text"><?= sanitize($pr['retorno']) ?></div>
-                    <?php endif; ?>
-
+        <div class="card">
+            <div class="info-grid" style="margin-bottom:1rem;">
+                <div class="info-item">
+                    <label>Data do Atendimento</label>
+                    <span><?= date('d/m/Y', strtotime($prontuario['data_atendimento'])) ?></span>
                 </div>
-            </li>
-            <?php endforeach; ?>
-        </ul>
+                <div class="info-item">
+                    <label>Tipo</label>
+                    <span><?= sanitize(ucfirst($prontuario['tipo_atendimento'])) ?></span>
+                </div>
+            </div>
+
+            <?php if (trim($prontuario['subjetivo'] ?? '')): ?>
+            <div style="margin-top:1rem;">
+                <div class="timeline-section">Evolução Clínica</div>
+                <div class="timeline-text" style="white-space:pre-wrap;margin-top:.35rem;"><?= sanitize($prontuario['subjetivo']) ?></div>
+            </div>
+            <?php endif; ?>
+
+            <?php if (trim($prontuario['prescricao'] ?? '')): ?>
+            <div style="margin-top:1rem;">
+                <div class="timeline-section">Prescrição</div>
+                <div class="timeline-text" style="white-space:pre-wrap;margin-top:.35rem;"><?= sanitize($prontuario['prescricao']) ?></div>
+            </div>
+            <?php endif; ?>
+
+            <?php if (trim($prontuario['retorno'] ?? '')): ?>
+            <div style="margin-top:1rem;">
+                <div class="timeline-section">Exames / Retorno</div>
+                <div class="timeline-text" style="white-space:pre-wrap;margin-top:.35rem;"><?= sanitize($prontuario['retorno']) ?></div>
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <?php if (!empty($prontuarioHistorico)): ?>
+        <div class="card" style="margin-top:1.25rem;">
+            <h2 style="margin-bottom:1rem;">Histórico de Edições</h2>
+            <ul class="timeline">
+                <?php foreach ($prontuarioHistorico as $h):
+                    $tipoLetra = strtoupper(substr($h['tipo_atendimento'] ?? 'E', 0, 1));
+                    $dataEdit  = date('d/m/Y', strtotime($h['editado_em'])) . ' às ' . date('H:i', strtotime($h['editado_em']));
+                ?>
+                <li class="timeline-item">
+                    <div class="timeline-dot"><?= $tipoLetra ?></div>
+                    <div class="timeline-body">
+                        <div class="timeline-meta">
+                            <span class="timeline-date">Editado em <strong><?= $dataEdit ?></strong></span>
+                            <?php if (!empty($h['editor'])): ?>
+                            <span class="timeline-date">por <strong><?= sanitize($h['editor']) ?></strong></span>
+                            <?php endif; ?>
+                            <?php if (!empty($h['tipo_atendimento'])): ?>
+                            <span class="badge badge-blue" style="margin-left:auto;"><?= sanitize($h['tipo_atendimento']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <?php if (!empty($h['data_atendimento'])): ?>
+                        <div style="font-size:.8rem;color:#6b7280;margin-bottom:.4rem;">
+                            Data do atendimento (antes): <?= date('d/m/Y', strtotime($h['data_atendimento'])) ?>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (trim($h['subjetivo'] ?? '')): ?>
+                        <div class="timeline-section">Evolução Clínica</div>
+                        <div class="timeline-text"><?= sanitize($h['subjetivo']) ?></div>
+                        <?php endif; ?>
+                        <?php if (trim($h['prescricao'] ?? '')): ?>
+                        <div class="timeline-section">Prescrição</div>
+                        <div class="timeline-text"><?= sanitize($h['prescricao']) ?></div>
+                        <?php endif; ?>
+                        <?php if (trim($h['retorno'] ?? '')): ?>
+                        <div class="timeline-section">Exames / Retorno</div>
+                        <div class="timeline-text"><?= sanitize($h['retorno']) ?></div>
+                        <?php endif; ?>
+                    </div>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php endif; ?>
+
         <?php else: ?>
         <div class="card">
-            <p style="color:#9ca3af;font-size:.9rem;">Nenhum registro no prontuário ainda. <a href="prontuario_novo.php?paciente_id=<?= $id ?>">Adicionar agora</a>.</p>
+            <p style="color:#9ca3af;font-size:.9rem;">Nenhum prontuário criado ainda. <a href="prontuario_novo.php?paciente_id=<?= $id ?>">Criar agora</a>.</p>
         </div>
         <?php endif; ?>
     </div>
@@ -236,6 +288,11 @@ include 'includes/header.php';
                         <td><?= sanitize(mb_strimwidth($c['observacoes'] ?? '', 0, 60, '…')) ?></td>
                         <td>
                             <a href="consulta_nova.php?id=<?= $c['id'] ?>&paciente_id=<?= $id ?>" class="btn btn-outline btn-sm">Editar</a>
+                            <form method="post" action="consultas.php" style="display:inline;" onsubmit="return confirm('Excluir esta consulta?');">
+                                <input type="hidden" name="delete_id" value="<?= $c['id'] ?>">
+                                <input type="hidden" name="paciente_id" value="<?= $id ?>">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -294,7 +351,7 @@ include 'includes/header.php';
                             <form method="post" action="exame_excluir.php" style="display:inline;" onsubmit="return confirm('Excluir este exame?');">
                                 <input type="hidden" name="exame_id" value="<?= $e['id'] ?>">
                                 <input type="hidden" name="paciente_id" value="<?= $id ?>">
-                                <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;">Excluir</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
                             </form>
                         </td>
                     </tr>

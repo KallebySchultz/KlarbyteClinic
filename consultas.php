@@ -9,7 +9,8 @@ $activePage = 'consultas';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $db->prepare('DELETE FROM consultas WHERE id = ?')->execute([(int)$_POST['delete_id']]);
     flash('Consulta excluída.');
-    redirect('consultas.php');
+    $back = !empty($_POST['paciente_id']) ? 'paciente_ver.php?id=' . (int)$_POST['paciente_id'] . '&tab=consultas' : 'consultas.php';
+    redirect($back);
 }
 
 $filtroData   = $_GET['data']   ?? '';
