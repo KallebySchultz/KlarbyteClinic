@@ -31,6 +31,14 @@ $campos = $db->query("SELECT * FROM campos_anamnese WHERE ativo = 1 ORDER BY ord
 $pageTitle  = sanitize($paciente['nome']);
 $activePage = 'pacientes';
 
+// Calculate patient age
+$idade = null;
+if ($paciente['data_nascimento']) {
+    $nascimento = new DateTime($paciente['data_nascimento']);
+    $hoje = new DateTime();
+    $idade = (int)$nascimento->diff($hoje)->y;
+}
+
 // Initials for avatar
 $initials = '';
 foreach (explode(' ', $paciente['nome']) as $w) {
@@ -81,9 +89,11 @@ include 'includes/header.php';
                 <div class="info-item"><label>Celular</label><span><?= sanitize($paciente['celular'] ?? '—') ?></span></div>
                 <div class="info-item"><label>E-mail</label><span><?= sanitize($paciente['email'] ?? '—') ?></span></div>
                 <div class="info-item"><label>Nascimento</label><span><?= $paciente['data_nascimento'] ? date('d/m/Y', strtotime($paciente['data_nascimento'])) : '—' ?></span></div>
+                <div class="info-item"><label>Idade</label><span><?= $idade !== null ? $idade . ' anos' : '—' ?></span></div>
                 <div class="info-item"><label>Sexo</label><span><?= ['M'=>'Masculino','F'=>'Feminino','O'=>'Outro'][$paciente['sexo']] ?? '—' ?></span></div>
                 <div class="info-item"><label>Profissão</label><span><?= sanitize($paciente['profissao'] ?? '—') ?></span></div>
                 <div class="info-item"><label>Estado Civil</label><span><?= sanitize($paciente['estado_civil'] ?? '—') ?></span></div>
+                <div class="info-item"><label>Número de Filhos</label><span><?= $paciente['numero_filhos'] !== null ? (int)$paciente['numero_filhos'] : '—' ?></span></div>
                 <div class="info-item"><label>Cidade</label><span><?= sanitize($paciente['cidade'] ?? '—') ?></span></div>
                 <div class="info-item" style="grid-column:span 3"><label>Endereço</label><span><?= sanitize($paciente['endereco'] ?? '—') ?></span></div>
                 <?php if ($paciente['observacoes']): ?>
