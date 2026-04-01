@@ -130,7 +130,8 @@ include 'includes/header.php';
 
     <!-- TAB: Prontuário -->
     <div id="tab-prontuario" class="tab-pane">
-        <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;">
+        <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-bottom:.75rem;">
+            <a href="prontuario_imprimir.php?paciente_id=<?= $id ?>" target="_blank" class="btn btn-outline btn-sm">🖨️ Imprimir Prontuário</a>
             <a href="prontuario_novo.php?paciente_id=<?= $id ?>" class="btn btn-primary btn-sm">+ Novo Registro</a>
         </div>
         <?php if ($prontuarios): ?>
