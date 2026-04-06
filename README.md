@@ -172,92 +172,6 @@ Abra o navegador e acesse:
 http://localhost/KlarbyteClinic/
 ```
 
----
-
-### 🔑 Credenciais Padrão
-
-| Campo | Valor |
-|-------|-------|
-| **E-mail** | `admin@enterclinic.com` |
-| **Senha** | `admin123` |
-
-> ⚠️ **Recomendado:** Altere a senha após o primeiro acesso.
-
----
-
-## 📁 Estrutura do Projeto
-
-```
-KlarbyteClinic/
-│
-├── assets/
-│   ├── css/          # Estilos da interface
-│   ├── img/          # Imagens e logo
-│   └── js/           # Scripts JavaScript
-│
-├── capturas de tela/ # Screenshots do sistema
-│
-├── includes/
-│   ├── header.php    # Cabeçalho e menu lateral
-│   └── footer.php    # Rodapé
-│
-├── uploads/          # Arquivos de exames enviados
-│
-├── config.php        # Configuração do banco de dados
-├── database.sql      # Script de criação do banco
-│
-├── index.php         # Dashboard principal
-│
-├── pacientes.php         # Listagem de pacientes
-├── paciente_novo.php     # Cadastro/edição de paciente + anamnese
-├── paciente_ver.php      # Perfil completo do paciente
-│
-├── prontuarios.php       # Listagem de prontuários
-├── prontuario_novo.php   # Novo registro de prontuário (SOAP)
-├── prontuario_ver.php    # Visualização do prontuário
-├── prontuario_imprimir.php # Versão para impressão
-│
-├── consultas.php         # Listagem de consultas
-├── consulta_nova.php     # Agendamento de consulta
-│
-├── exames.php            # Listagem de exames
-├── exame_upload.php      # Upload de exame
-├── exame_arquivo.php     # Visualização de arquivo
-├── exame_excluir.php     # Exclusão de exame
-│
-└── configuracoes.php     # Configurações dos campos da anamnese
-```
-
----
-
-## 🗄️ Estrutura do Banco de Dados
-
-O sistema utiliza as seguintes tabelas principais:
-
-| Tabela | Descrição |
-|--------|-----------|
-| `usuarios` | Usuários/profissionais do sistema |
-| `pacientes` | Dados cadastrais dos pacientes |
-| `anamnese` | Fichas de anamnese por paciente |
-| `campos_anamnese` | Definição dinâmica dos campos da anamnese |
-| `consultas` | Agendamentos e consultas realizadas |
-| `prontuario` | Registros clínicos (SOAP) |
-| `prontuario_historico` | Histórico de edições dos prontuários |
-| `exames` | Metadados dos arquivos de exames |
-
----
-
-## 🔒 Segurança
-
-- Senhas armazenadas com hash **bcrypt** via `password_hash()`
-- Proteção contra **SQL Injection** com PDO e prepared statements
-- Sanitização de saídas HTML com `htmlspecialchars()` para prevenção de **XSS**
-- Sessões PHP para controle de autenticação
-
----
-
-## 💡 Como Usar o Sistema como Aplicativo Desktop
-
 O repositório inclui o guia **`Como transformar o web em programa.pdf`**, que explica como empacotar o EnterClinic em um executável desktop usando ferramentas como Nativefier ou similares, para que funcione como um programa instalado no computador.
 
 ---
@@ -290,6 +204,6 @@ Desenvolvido por **Kalleby Schultz**
 
 <div align="center">
 
-Feito com ❤️ para facilitar a gestão clínica.
+Feito com carinho para facilitar a gestão clínica.
 
 </div>
