@@ -82,7 +82,7 @@ include 'includes/header.php';
             <?php foreach ($registros as $r): ?>
             <tr>
                 <td>
-                    <a href="paciente_ver.php?id=<?= $r['paciente_id'] ?>&tab=prontuario" style="color:#2d7a50;font-weight:600;">
+                    <a href="paciente_ver.php?id=<?= $r['paciente_id'] ?>&tab=prontuario" style="color:#1a5fb4;font-weight:600;">
                         <?= sanitize($r['paciente_nome']) ?>
                     </a>
                 </td>

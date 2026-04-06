@@ -133,7 +133,7 @@ include 'includes/header.php';
 </p>
 
 <?php if ($editing): ?>
-<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#166534;display:flex;gap:1rem;flex-wrap:wrap;">
+<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#1e3a8a;display:flex;gap:1rem;flex-wrap:wrap;">
     <span>Criado em: <strong><?= $criadoEm ?></strong></span>
     <?php if ($foiEditado): ?>
     <span>Última edição: <strong><?= $editadoEm ?></strong></span>

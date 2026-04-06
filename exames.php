@@ -91,7 +91,7 @@ include 'includes/header.php';
             ?>
             <tr>
                 <td>
-                    <a href="paciente_ver.php?id=<?= $e['paciente_id'] ?>&tab=exames" style="color:#2d7a50;font-weight:500;">
+                    <a href="paciente_ver.php?id=<?= $e['paciente_id'] ?>&tab=exames" style="color:#1a5fb4;font-weight:500;">
                         <?= sanitize($e['paciente_nome']) ?>
                     </a>
                 </td>

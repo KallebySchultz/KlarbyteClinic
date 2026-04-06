@@ -95,7 +95,7 @@ include 'includes/header.php';
                 <?php foreach ($pacientes as $p): ?>
                     <tr>
                         <td>
-                            <a href="paciente_ver.php?id=<?= $p['id'] ?>" style="color:#2d7a50;font-weight:600;">
+                            <a href="paciente_ver.php?id=<?= $p['id'] ?>" style="color:#1a5fb4;font-weight:600;">
                                 <?= sanitize($p['nome']) ?>
                             </a>
                         </td>
