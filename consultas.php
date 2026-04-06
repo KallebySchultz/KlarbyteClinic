@@ -81,7 +81,7 @@ include 'includes/header.php';
             ?>
             <tr>
                 <td><?= date('d/m/Y H:i', strtotime($c['data_hora'])) ?></td>
-                <td><a href="paciente_ver.php?id=<?= $c['paciente_id'] ?>" style="color:#2d7a50;font-weight:600;"><?= sanitize($c['paciente_nome']) ?></a></td>
+                <td><a href="paciente_ver.php?id=<?= $c['paciente_id'] ?>" style="color:#1a5fb4;font-weight:600;"><?= sanitize($c['paciente_nome']) ?></a></td>
                 <td><?= sanitize($c['tipo']) ?></td>
                 <td><span class="badge <?= $badgeClass ?>"><?= sanitize($c['status']) ?></span></td>
                 <td><?= sanitize(mb_strimwidth($c['observacoes'] ?? '', 0, 50, '…')) ?></td>

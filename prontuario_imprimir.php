@@ -94,7 +94,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     font-size: 12pt;
     color: #111;
-    background: #f0f4f1;
+    background: #f0f4fa;
     line-height: 1.5;
 }
 
@@ -130,8 +130,8 @@ body {
     transition: opacity .15s;
 }
 .btn:hover { opacity: .85; }
-.btn-primary { background: #2d7a50; color: #fff; }
-.btn-outline  { background: transparent; color: #2d7a50; border: 1.5px solid #2d7a50; }
+.btn-primary { background: #1a5fb4; color: #fff; }
+.btn-outline  { background: transparent; color: #1a5fb4; border: 1.5px solid #1a5fb4; }
 
 /* ── Document header ──────────────────────── */
 .doc-header {
@@ -140,13 +140,13 @@ body {
     justify-content: space-between;
     padding-bottom: 1rem;
     margin-bottom: 1.5rem;
-    border-bottom: 2px solid #034724;
+    border-bottom: 2px solid #0d2137;
 }
 
 .doc-clinic-name {
     font-size: 1.2rem;
     font-weight: 800;
-    color: #034724;
+    color: #0d2137;
     letter-spacing: .02em;
 }
 
@@ -157,7 +157,7 @@ body {
     line-height: 1.6;
 }
 
-.doc-meta strong { color: #1a3a28; }
+.doc-meta strong { color: #1a2f5a; }
 
 /* ── Section ──────────────────────────────── */
 .section {
@@ -169,8 +169,8 @@ body {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: #2d7a50;
-    border-bottom: 1.5px solid #d1fae5;
+    color: #1a5fb4;
+    border-bottom: 1.5px solid #bfdbfe;
     padding-bottom: .3rem;
     margin-bottom: .85rem;
 }
@@ -179,7 +179,7 @@ body {
 .patient-name {
     font-size: 1.35rem;
     font-weight: 800;
-    color: #1a3a28;
+    color: #1a2f5a;
     margin-bottom: .4rem;
 }
 
@@ -225,7 +225,7 @@ body {
     white-space: pre-wrap;
     padding: .4rem .6rem;
     background: #f9fafb;
-    border-left: 3px solid #d1fae5;
+    border-left: 3px solid #bfdbfe;
     border-radius: 0 4px 4px 0;
 }
 
@@ -242,15 +242,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #f0fdf4;
+    background: #eff6ff;
     padding: .6rem 1rem;
-    border-bottom: 1px solid #bbf7d0;
+    border-bottom: 1px solid #bfdbfe;
 }
 
 .entry-date {
     font-weight: 700;
     font-size: .95rem;
-    color: #1a3a28;
+    color: #1a2f5a;
 }
 
 .entry-meta {
@@ -278,7 +278,7 @@ body {
 .field-label {
     font-size: .72rem;
     font-weight: 700;
-    color: #2d7a50;
+    color: #1a5fb4;
     text-transform: uppercase;
     letter-spacing: .05em;
     margin-top: .75rem;
@@ -329,7 +329,7 @@ body {
 /* ── Histórico de edições ─────────────────── */
 .historico-section {
     margin-top: .5rem;
-    border-top: 1px dashed #d1fae5;
+    border-top: 1px dashed #bfdbfe;
     padding-top: .5rem;
 }
 

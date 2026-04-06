@@ -168,7 +168,7 @@ include 'includes/header.php';
         </div>
 
         <!-- Cabeçalho de datas -->
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#166534;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#1e3a8a;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
             <?php if ($prCriado): ?><span>Criado em: <strong><?= $prCriado ?></strong></span><?php endif; ?>
             <?php if ($prFoiEditado): ?><span>Última edição: <strong><?= $prEditado ?></strong></span><?php endif; ?>
             <span class="badge badge-blue" style="margin-left:auto;"><?= sanitize($prontuario['tipo_atendimento']) ?></span>
