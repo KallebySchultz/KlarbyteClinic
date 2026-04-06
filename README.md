@@ -2,8 +2,6 @@
 
 <img src="assets/img/logo.png" alt="EnterClinic Logo" width="180"/>
 
-# EnterClinic
-
 **Sistema de Gestão Clínica — simples, completo e pronto para uso local**
 
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
@@ -17,7 +15,7 @@
 
 ## 📋 Sobre o Projeto
 
-O **EnterClinic** é um sistema web de gestão clínica desenvolvido em PHP puro com banco de dados MySQL. Projetado para rodar localmente via XAMPP, ele oferece uma interface moderna e intuitiva para profissionais de saúde gerenciarem pacientes, consultas, prontuários e exames — tudo em um único lugar.
+O **KlarbyteClinic** é um sistema web de gestão clínica desenvolvido em PHP puro com banco de dados MySQL. Projetado para rodar localmente via XAMPP, ele oferece uma interface moderna e intuitiva para profissionais de saúde gerenciarem pacientes, consultas, prontuários e exames — tudo em um único lugar.
 
 > 💡 Ideal para clínicas de pequeno e médio porte, consultórios e profissionais autônomos da área da saúde.
 
